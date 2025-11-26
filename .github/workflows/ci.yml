@@ -94,8 +94,16 @@ jobs:
           echo "🔐 Logging in to GHCR..."
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.repository_owner }} --password-stdin
 
-          echo "📥 Pulling latest image..."
-          docker pull ${{ env.REGISTRY }}/${{ env.REPO_OWNER_LOWER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          # Preparar nombre de imagen en minúsculas
+          IMAGE_NAME_LOWER=$(echo "${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
+          export IMAGE_NAME="$IMAGE_NAME_LOWER:${{ env.IMAGE_TAG }}"
+
+          echo "📥 Pulling latest image: $IMAGE_NAME"
+          docker pull "$IMAGE_NAME"
+
+          # Crear red swarm si no existe
+          echo "🌐 Creating swarm network 'web' if not exists..."
+          docker network ls | grep -q web || docker network create --driver overlay web
 
           echo "🗑️ Removing old stack..."
           docker stack rm lopez || true
@@ -112,4 +120,5 @@ jobs:
 
           echo "✅ Deployment complete! Checking services..."
           docker service ls
-          docker service ps lopez_lopez --no-trunc
+          docker service ps lopez_lopez --no-trunc || echo "Service lopez_lopez not found, checking all lopez services..."
+          docker service ps $(docker service ls --filter name=lopez -q) --no-trunc
