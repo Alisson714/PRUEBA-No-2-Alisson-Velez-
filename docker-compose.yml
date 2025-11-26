@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  lopez-app:
+    image: ${IMAGE_NAME:-ghcr.io/alisson714/alissonvelez5tob-alisson/lopez:1.0.5}
+    container_name: lopez-calculator
+    restart: unless-stopped
+    ports:
+      - "3005:5000"
+    environment:
+      - PORT=5000
+      - FLASK_ENV=production
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lopez.rule=Host(`lopez.byronrm.com`)"
+      - "traefik.http.routers.lopez.tls=true"
+      - "traefik.http.routers.lopez.tls.certresolver=letsencrypt"
+      - "traefik.http.services.lopez.loadbalancer.server.port=5000"
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
