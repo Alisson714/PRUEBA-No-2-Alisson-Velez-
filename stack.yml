@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  lopez:
+    image: ${IMAGE_NAME:-ghcr.io/alisson714/lopez:1.0.5}
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+      - FLASK_ENV=production
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
