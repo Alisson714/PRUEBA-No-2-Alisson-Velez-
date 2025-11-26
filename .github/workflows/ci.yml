@@ -79,7 +79,7 @@ jobs:
         host: 161.97.140.245
         username: ${{ secrets.VPS_USER }}
         password: ${{ secrets.VPS_PASSWORD }}
-        port: 1002
+        port: 1004
         source: "stack.yml"
         target: "/home/${{ secrets.VPS_USER }}/automatizar"
 
@@ -89,7 +89,7 @@ jobs:
         host: 161.97.140.245
         username: ${{ secrets.VPS_USER }}
         password: ${{ secrets.VPS_PASSWORD }}
-        port: 1002
+        port: 1004
         script: |
           echo "🔐 Logging in to GHCR..."
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.repository_owner }} --password-stdin
